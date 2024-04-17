@@ -1,4 +1,16 @@
+from abc import ABC, abstractmethod
+
 import numpy as np
+
+
+class LossLayer(ABC):
+    @abstractmethod
+    def loss(self, pred: np.ndarray[float], label: float) -> float:
+        pass
+
+    @abstractmethod
+    def bottom_diff(self, pred: np.ndarray[float], label: float) -> np.ndarray[float]:
+        pass
 
 
 def sigmoid(x):

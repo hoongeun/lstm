@@ -1,9 +1,9 @@
 import numpy as np
 
-from lstm import LstmNetwork, LstmParam
+from lstm import LossLayer, LstmNetwork, LstmParam
 
 
-class ToyLossLayer:
+class ToyLossLayer(LossLayer):
     """
     Computes square loss with first element of hidden layer array.
     """
