@@ -23,6 +23,7 @@ def example_0():
     # learns to repeat simple sequence from random inputs
     np.random.seed(0)
 
+    iter_size = 10
     # parameters for input data dimension and lstm cell count
     mem_cell_ct = 100
     x_dim = 50
@@ -31,7 +32,7 @@ def example_0():
     y_list = [-0.5, 0.2, 0.1, -0.5]
     input_val_arr = [np.random.random(x_dim) for _ in y_list]
 
-    for cur_iter in range(100):
+    for cur_iter in range(iter_size):
         print("iter", "%2s" % str(cur_iter), end=": ")
         for ind in range(len(y_list)):
             lstm_net.x_list_add(input_val_arr[ind])
