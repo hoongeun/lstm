@@ -1,12 +1,13 @@
 import numpy as np
 
-from lstm import LstmParam, LstmNetwork
+from lstm import LstmNetwork, LstmParam
 
 
 class ToyLossLayer:
     """
     Computes square loss with first element of hidden layer array.
     """
+
     @classmethod
     def loss(self, pred, label):
         return (pred[0] - label) ** 2
@@ -35,9 +36,17 @@ def example_0():
         for ind in range(len(y_list)):
             lstm_net.x_list_add(input_val_arr[ind])
 
-        print("y_pred = [" +
-              ", ".join(["% 2.5f" % lstm_net.lstm_node_list[ind].state.h[0] for ind in range(len(y_list))]) +
-              "]", end=", ")
+        print(
+            "y_pred = ["
+            + ", ".join(
+                [
+                    "% 2.5f" % lstm_net.lstm_node_list[ind].state.h[0]
+                    for ind in range(len(y_list))
+                ]
+            )
+            + "]",
+            end=", ",
+        )
 
         loss = lstm_net.y_list_is(y_list, ToyLossLayer)
         print("loss:", "%.3e" % loss)
@@ -47,4 +56,3 @@ def example_0():
 
 if __name__ == "__main__":
     example_0()
-
