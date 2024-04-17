@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List, NoReturn, Optional
 
 import numpy as np
 
@@ -13,26 +14,26 @@ class LossLayer(ABC):
         pass
 
 
-def sigmoid(x):
+def sigmoid(x: float) -> float:
     return 1.0 / (1 + np.exp(-x))
 
 
-def sigmoid_derivative(values):
+def sigmoid_derivative(values: float) -> float:
     return values * (1 - values)
 
 
-def tanh_derivative(values):
+def tanh_derivative(values: float) -> float:
     return 1.0 - values**2
 
 
 # createst uniform random array w/ values in [a,b) and shape args
-def rand_arr(a, b, *args):
+def rand_arr(a: float, b: float, *args) -> np.ndarray[float]:
     np.random.seed(0)
     return np.random.rand(*args) * (b - a) + a
 
 
 class LstmParam:
-    def __init__(self, mem_cell_ct, x_dim):
+    def __init__(self, mem_cell_ct: int, x_dim: int):
         self.mem_cell_ct = mem_cell_ct
         self.x_dim = x_dim
         concat_len = x_dim + mem_cell_ct
@@ -56,7 +57,7 @@ class LstmParam:
         self.bf_diff = np.zeros(mem_cell_ct)
         self.bo_diff = np.zeros(mem_cell_ct)
 
-    def apply_diff(self, lr=1):
+    def apply_diff(self, lr: float=1):
         self.wg -= lr * self.wg_diff
         self.wi -= lr * self.wi_diff
         self.wf -= lr * self.wf_diff
@@ -77,7 +78,7 @@ class LstmParam:
 
 
 class LstmState:
-    def __init__(self, mem_cell_ct, x_dim):
+    def __init__(self, mem_cell_ct: int, x_dim: int):
         self.g = np.zeros(mem_cell_ct)
         self.i = np.zeros(mem_cell_ct)
         self.f = np.zeros(mem_cell_ct)
@@ -89,14 +90,14 @@ class LstmState:
 
 
 class LstmNode:
-    def __init__(self, lstm_param, lstm_state):
+    def __init__(self, lstm_param: LstmParam, lstm_state: LstmState):
         # store reference to parameters and to activations
         self.state = lstm_state
         self.param = lstm_param
         # non-recurrent input concatenated with recurrent input
         self.xc = None
 
-    def bottom_data_is(self, x, s_prev=None, h_prev=None):
+    def bottom_data_is(self, x: np.ndarray[float], s_prev: Optional[np.ndarray[float]]=None, h_prev: Optional[np.ndarray[float]]=None):
         # if this is the first lstm node in the network
         if s_prev is None:
             s_prev = np.zeros_like(self.state.s)
@@ -117,7 +118,7 @@ class LstmNode:
 
         self.xc = xc
 
-    def top_diff_is(self, top_diff_h, top_diff_s):
+    def top_diff_is(self, top_diff_h: np.ndarray[float], top_diff_s: np.ndarray[float]):
         # notice that top_diff_s is carried along the constant error carousel
         ds = self.state.o * top_diff_h + top_diff_s
         do = self.state.s * top_diff_h
@@ -154,13 +155,13 @@ class LstmNode:
 
 
 class LstmNetwork:
-    def __init__(self, lstm_param):
+    def __init__(self, lstm_param: LstmParam):
         self.lstm_param = lstm_param
         self.lstm_node_list = []
         # input sequence
         self.x_list = []
 
-    def y_list_is(self, y_list, loss_layer):
+    def y_list_is(self, y_list: List[float], loss_layer: LossLayer) -> float:
         """
         Updates diffs by setting target sequence
         with corresponding loss layer.
@@ -191,10 +192,10 @@ class LstmNetwork:
 
         return loss
 
-    def x_list_clear(self):
+    def x_list_clear(self) -> NoReturn:
         self.x_list = []
 
-    def x_list_add(self, x):
+    def x_list_add(self, x: np.ndarray[float]) -> NoReturn:
         self.x_list.append(x)
         if len(self.x_list) > len(self.lstm_node_list):
             # need to add new lstm node, create new state mem

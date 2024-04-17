@@ -9,11 +9,11 @@ class ToyLossLayer(LossLayer):
     """
 
     @classmethod
-    def loss(self, pred, label):
+    def loss(self, pred: np.ndarray[float], label: float) -> float:
         return (pred[0] - label) ** 2
 
     @classmethod
-    def bottom_diff(self, pred, label):
+    def bottom_diff(self, pred: np.ndarray[float], label: float) -> np.ndarray[float]:
         diff = np.zeros_like(pred)
         diff[0] = 2 * (pred[0] - label)
         return diff
